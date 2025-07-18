@@ -21,18 +21,14 @@ WORKDIR /app
 RUN git clone https://github.com/advplyr/audiobookshelf.git . && \
     git checkout ${APP_VERSION}
 
-# Install in server directory
-WORKDIR /app/server
-RUN npm install
-
-# Install and build in client directory
+# Install and build client
 WORKDIR /app/client
-RUN npm install && \
-    npm run prod
+RUN npm ci && \
+    npm run generate
 
-# Install in root
+# Install server/root
 WORKDIR /app
-RUN npm install
+RUN npm ci
 
 # Cleanup
 RUN rm -rf /tmp/* /var/cache/apk/*
@@ -49,18 +45,18 @@ RUN apk add --no-cache \
     tini \
     tzdata
 
-# Copy built app from builder stage to root
-COPY --from=builder /app /
+# Copy built app from builder stage
+COPY --from=builder /app /app
 
-# Set workdir to root
-WORKDIR /
+# Set workdir
+WORKDIR /app
 
 # Copy s6 services and scripts from repo (for app start)
 COPY root/ /
 
 # Environment variables for linuxserver.io features (integrated in base)
 ENV PUID=1000 PGID=1000 \
-    HOME=/app
+    HOME=/app  # Adjust if needed
 
 # Volumes (as in original)
 VOLUME /config /audiobooks /podcasts /metadata
