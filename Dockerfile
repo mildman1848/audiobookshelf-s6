@@ -56,7 +56,7 @@ COPY root/ /
 
 # Environment variables for linuxserver.io features (integrated in base)
 ENV PUID=1000 PGID=1000 \
-    HOME=/app  # Adjust if needed
+    HOME=/app
 
 # Volumes (as in original)
 VOLUME /config /audiobooks /podcasts /metadata
