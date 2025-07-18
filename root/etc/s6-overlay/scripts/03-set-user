@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+if [ -n "$PUID" ] && [ -n "$PGID" ]; then
+  if getent group abc >/dev/null; then
+    groupmod -g $PGID abc
+  else
+    addgroup -g $PGID abc
+  fi
+  if getent passwd abc >/dev/null; then
+    usermod -u $PUID abc
+  else
+    adduser -u $PUID -G abc -D -H abc
+  fi
+  chown -R abc:abc /config /metadata /audiobooks /podcasts
+fi

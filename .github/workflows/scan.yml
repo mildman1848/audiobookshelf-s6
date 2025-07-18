@@ -1,0 +1,36 @@
+name: Scan Docker Image for Vulnerabilities
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Image (for scanning)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true  # Load to local Docker daemon for scanning
+          tags: local/audiobookshelf-s6:scan
+          push: false
+          platforms: linux/amd64  # Für schnelles Scannen; erweitere bei Bedarf
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: local/audiobookshelf-s6:scan
+          format: table
+          exit-code: 1  # Fail on critical vulnerabilities
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH

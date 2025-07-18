@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+if [ -n "$DOCKER_MODS" ]; then
+  for mod in $(echo "$DOCKER_MODS" | tr ":" "\n"); do
+    echo "Installing mod: $mod"
+    curl -L "$mod" -o /tmp/mod.tar.gz && tar -C / -xzf /tmp/mod.tar.gz && rm /tmp/mod.tar.gz
+  done
+fi

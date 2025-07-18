@@ -1,0 +1,47 @@
+# .dockerignore
+
+# Ignoriere Git-Dateien und Ordner
+.git
+.gitignore
+
+# Ignoriere lokale Entwicklungsumgebungen
+.vscode/
+.idea/
+
+# Ignoriere Node.js-Abhängigkeiten (falls vorhanden)
+node_modules/
+
+# Ignoriere temporäre Dateien
+*.tmp
+*.swp
+*.bak
+*~
+
+# Ignoriere Logs und Debug-Dateien
+*.log
+debug/
+
+# Ignoriere Secrets und Umgebungsdateien
+.env
+*.env
+
+# Ignoriere lokale Volumes und Overrides
+volumes/
+docker-compose.override.yml
+
+# Ignoriere Build-Artefakte
+*.tar.gz
+*.zip
+
+# Ignoriere OS-spezifische Dateien
+.DS_Store
+Thumbs.db
+
+# Ignoriere Python-Caches (falls relevant)
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignoriere andere unnötige Dateien
+README.md  # Optional: Wenn du README nicht in das Image kopieren möchtest
+CHANGELOG.md

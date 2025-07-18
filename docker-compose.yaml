@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  audiobookshelf:
+    image: ghcr.io/mildman1848/audiobookshelf-s6:latest
+    container_name: audiobookshelf
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC  # Optional: Setze deine Zeitzone
+      # - DOCKER_MODS=https://example.com/mod.tar.gz  # Optional: Für Docker Mods
+    volumes:
+      - ./config:/config  # Passe Pfade an deine lokale Umgebung an
+      - ./audiobooks:/audiobooks
+      - ./podcasts:/podcasts
+      - ./metadata:/metadata
+    ports:
+      - 13378:80
+    restart: unless-stopped
