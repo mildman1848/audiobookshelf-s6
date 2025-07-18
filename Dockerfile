@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Build arguments for versions (allows updates without changing Dockerfile)
-ARG BASE_IMAGE_TAG=3.22  # linuxserver/baseimage-alpine version
+ARG BASE_IMAGE_TAG=3.20  # linuxserver/baseimage-alpine version
 ARG NODE_VERSION=20
 ARG APP_VERSION=v2.26.1  # Audiobookshelf version/tag
 
@@ -13,34 +13,47 @@ RUN apk add --no-cache \
     ffmpeg \
     python3 \
     tini \
-    tzdata
+    tzdata \
+    git
 
-# Set workdir and install app (clone source code; adjust if local copy)
+# Set workdir and clone repo
 WORKDIR /app
-RUN apk add --no-cache git && \
-    git clone https://github.com/advplyr/audiobookshelf.git . && \
-    git checkout ${APP_VERSION} && \
-    npm install && \
-    npm run build && \
-    rm -rf /tmp/* /var/cache/apk/*
+RUN git clone https://github.com/advplyr/audiobookshelf.git . && \
+    git checkout ${APP_VERSION}
+
+# Install in server directory
+WORKDIR /app/server
+RUN npm install
+
+# Install and build in client directory
+WORKDIR /app/client
+RUN npm install && \
+    npm run prod
+
+# Install in root
+WORKDIR /app
+RUN npm install
+
+# Cleanup
+RUN rm -rf /tmp/* /var/cache/apk/*
 
 # Stage 2: Final - Use linuxserver baseimage (includes s6, mods, secrets)
 FROM ghcr.io/linuxserver/baseimage-alpine:${BASE_IMAGE_TAG}
 
 # Install Node and runtime dependencies (since base is Alpine)
 RUN apk add --no-cache \
-    nodejs-current \
+    nodejs \
     npm \
     ffmpeg \
     python3 \
     tini \
     tzdata
 
-# Copy built app from builder stage
-COPY --from=builder /app /app
+# Copy built app from builder stage to root
+COPY --from=builder /app /
 
-# Set workdir
-WORKDIR /app
+# Set workdir to root
+WORKDIR /
 
 # Copy s6 services and scripts from repo (for app start)
 COPY root/ /
