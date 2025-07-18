@@ -58,4 +58,4 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7  # Multi-arch build
           build-args: |
             S6_OVERLAY_VERSION=3.2.1.0
-            BASE_IMAGE_TAG=latest
+            BASE_IMAGE_TAG=3.22

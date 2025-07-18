@@ -2,8 +2,8 @@
 
 # Build arguments for versions (allows updates without changing Dockerfile)
 ARG BASE_IMAGE_TAG=3.22  # linuxserver/baseimage-alpine version
-ARG NODE_VERSION=22
-ARG APP_VERSION=latest  # Audiobookshelf version/tag
+ARG NODE_VERSION=20
+ARG APP_VERSION=v2.26.1  # Audiobookshelf version/tag
 
 # Stage 1: Builder - Build the Audiobookshelf app (based on original logic)
 FROM node:${NODE_VERSION}-alpine AS builder
@@ -18,7 +18,8 @@ RUN apk add --no-cache \
 # Set workdir and install app (clone source code; adjust if local copy)
 WORKDIR /app
 RUN apk add --no-cache git && \
-    git clone --branch ${APP_VERSION} https://github.com/advplyr/audiobookshelf.git . && \
+    git clone https://github.com/advplyr/audiobookshelf.git . && \
+    git checkout ${APP_VERSION} && \
     npm install && \
     npm run build && \
     rm -rf /tmp/* /var/cache/apk/*
