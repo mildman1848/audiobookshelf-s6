@@ -1,4 +1,3 @@
-
 # Dockerfile
 
 # Build arguments for versions (allows updates without changing Dockerfile)
@@ -9,8 +8,7 @@ ARG S6_OVERLAY_VERSION=3.2.0.0
 FROM ghcr.io/advplyr/audiobookshelf:${BASE_IMAGE_TAG}
 
 # Install required tools and s6-overlay (multi-arch compatible)
-RUN apt-get update && \
-    apt-get install -y curl xz-utils && \
+RUN apk add --no-cache curl xz && \
     # Download noarch tarball
     curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/noarch.tar.xz && \
     tar -C / -Jxpf /tmp/noarch.tar.xz && \
@@ -30,7 +28,7 @@ RUN apt-get update && \
     tar -C / -Jxpf /tmp/symlinks-arch.tar.xz && \
     # Cleanup
     rm /tmp/*.tar.xz && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/cache/apk/*
 
 # Copy s6 services, scripts, etc. from repo (multi-arch agnostic)
 COPY root/ /
